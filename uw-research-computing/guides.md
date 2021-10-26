@@ -4,10 +4,6 @@ layout: markdown-page
 title: Computing Guides
 ---
 
- <link rel = "stylesheet"
-   type = "text/css"
-   href = "bootstrap.css" />
-
 <p>
 Below is a list of guides for some of the most common tasks our users need to
 carry out as they begin and continue to use the resources at the CHTC. 
