@@ -11,3 +11,5 @@ vendor/
 
 # The staff/schedules symlink is created by the GHA build_deploy.yml
 /staff/schedules
+
+run.sh
