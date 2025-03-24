@@ -9,7 +9,6 @@ permissions:
 
 jobs:
   Update-Submodules:
-    if: ${{ github.repository == 'CHTC/chtc-website-source' }}
     runs-on: ubuntu-latest
     steps:
 
