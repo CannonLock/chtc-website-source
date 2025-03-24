@@ -29,10 +29,10 @@ jobs:
             git add .
             git commit -m "Update Article Submodule"
             git push
-            echo "build=true" >> "$GITHUB_OUTPUT"
+            echo "build=true" >> $GITHUB_OUTPUT
           else
             echo "no changes";
-            echo "build=false" >> "$GITHUB_OUTPUT"
+            echo "build=false" >> $GITHUB_OUTPUT
           fi
 
   build-updated-website:
