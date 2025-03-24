@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  Update-Submodules:
+  update:
     runs-on: ubuntu-latest
     steps:
 
@@ -37,12 +37,12 @@ jobs:
 
   build-updated-website:
     runs-on: ubuntu-latest
-    needs: [Update-Submodules]
+    needs: [update]
 #    if: ${{ needs.Update-Submodules.outputs.build == 'true' }}
 #    uses: ./.github/workflows/build.yml
 #    secrets: inherit
     steps:
       - name: "test"
         run: |
-          echo "${{ toJSON(needs.Update-Submodules.outputs) }}"
-          echo "${{ needs.Update-Submodules.outputs.build }}"
+          echo "${{ toJSON(needs.update.outputs) }}"
+          echo "${{ needs.update.outputs.build }}"
