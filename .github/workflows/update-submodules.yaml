@@ -39,7 +39,6 @@ jobs:
           fi
 
   build-updated-website:
-    runs-on: ubuntu-latest
     needs: [update]
     if: ${{ needs.update.outputs.build == 'true' }}
     uses: ./.github/workflows/build.yml
