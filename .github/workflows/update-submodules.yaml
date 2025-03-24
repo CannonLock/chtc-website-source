@@ -28,7 +28,7 @@ jobs:
           if [ -n "$(git status --porcelain)" ]; then
             git add .
             git commit -m "Update Article Submodule"
-            git push
+            echo "changes"; 
             echo "build=true" >> $GITHUB_OUTPUT
           else
             echo "no changes";
