@@ -1,9 +1,15 @@
 name: Update Submodules
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 * * * *'
+
+permissions:
+  actions: read
 
 jobs:
-
   Update-Submodules:
+    if: ${{ github.repository == 'CHTC/chtc-website-source' }}
     runs-on: ubuntu-latest
     steps:
 
@@ -23,6 +29,14 @@ jobs:
             git add .
             git commit -m "Update Article Submodule"
             git push
+            echo "build=true" >> "$GITHUB_OUTPUT"
           else
             echo "no changes";
+            echo "build=false" >> "$GITHUB_OUTPUT"
           fi
+
+  build-updated-website:
+    needs: [Update-Submodules]
+    if: ${{ needs.Update-Submodules.outputs.build == 'true' }}
+    uses: ./.github/workflows/build.yml
+    secrets: inherit
