@@ -40,7 +40,7 @@ jobs:
     needs: [Update-Submodules]
 #    if: ${{ needs.Update-Submodules.outputs.build == 'true' }}
 #    uses: ./.github/workflows/build.yml
-    secrets: inherit
+#    secrets: inherit
     steps:
       - name: "test"
         run: |
