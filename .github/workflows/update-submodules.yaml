@@ -37,6 +37,11 @@ jobs:
 
   build-updated-website:
     needs: [Update-Submodules]
-    if: ${{ needs.Update-Submodules.outputs.build == 'true' }}
-    uses: ./.github/workflows/build.yml
+#    if: ${{ needs.Update-Submodules.outputs.build == 'true' }}
+#    uses: ./.github/workflows/build.yml
     secrets: inherit
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "${{ toJSON(needs.Update-Submodules.outputs) }}"
+          echo "${{ needs.Update-Submodules.outputs.build }}"
