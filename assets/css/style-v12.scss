@@ -368,6 +368,10 @@ h6:hover .header-link {
   text-decoration: none;
   color: inherit;
 }
+// Descriptions are markdown; drop the trailing paragraph margin inside the card.
+.portal-card-description p:last-child {
+  margin-bottom: 0;
+}
 
 // Learning materials page (/learning-materials.html)
 #learning-materials {
@@ -449,6 +453,14 @@ h6:hover .header-link {
     color: #495057;
     font-size: 0.75rem;
     line-height: 1.4;
+  }
+
+  // Tags that would leave no results when combined with the current filters.
+  .lm-tag-option-empty {
+    .lm-tag-name,
+    .lm-tag-count {
+      opacity: 0.5;
+    }
   }
 
   // -- Filter and sort toolbar --

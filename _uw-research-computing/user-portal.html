@@ -14,8 +14,17 @@ title: CHTC User portal
                             {{ section.name }}
                         </h2>
                     </div>
+                    {% comment %}
+                    A section either lists its links inline or names a _data file to pull
+                    them from (`source: learning-materials` shows the featured materials).
+                    {% endcomment %}
+                    {% if section.source %}
+                    {% assign links = site.data[section.source] | where: "featured", true | sort: "last updated" | reverse %}
+                    {% else %}
+                    {% assign links = section.links %}
+                    {% endif %}
                     <div class="row g-3 text-dark">
-                        {% for link in section.links %}
+                        {% for link in links %}
                             {% if section.large %}
                             <div class="col-6 pt-3">
                             {% else %}
@@ -26,12 +35,19 @@ title: CHTC User portal
                                     <span class="fw-bold" style="font-size: 1.25rem;">
                                         {{ link.text }}
                                     </span>
-                                    <p style="font-size: 0.9rem; margin-top: 0.5rem; text-align: left;">
-                                        {{ link.description }}
-                                    </p>
+                                    <div class="portal-card-description" style="font-size: 0.9rem; margin-top: 0.5rem; text-align: left;">
+                                        {{ link.description | markdownify }}
+                                    </div>
                                 </a>
                             </div>
                         {% endfor %}
+                        {% if section.see_all %}
+                        <div class="col-12 pt-3">
+                            <a href="{{ section.see_all.url | relative_url }}" class="btn btn-outline-primary">
+                                {{ section.see_all.text }} <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                        {% endif %}
                     </div>
             </div>
             {% endfor %}

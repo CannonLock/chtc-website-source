@@ -3,8 +3,11 @@
  * and pagination.
  *
  * All materials are rendered by Jekyll and filtered/sorted/paged client side,
- * so the page still works without JavaScript (default order is "recently
- * updated" with every material listed) and search engines see the full list.
+ * so the page still works without JavaScript (default order is the "Featured"
+ * sort with every material listed) and search engines see the full list.
+ *
+ * Selected tags combine with AND: a material must carry every selected tag,
+ * and also match the search term if there is one.
  */
 const PAGE_SIZE = 12;
 
@@ -27,16 +30,21 @@ class LearningMaterialsBrowser {
         this.selectedTags = new Set();
         this.searchTerm = "";
         this.page = 1;
-        // Featured materials lead the list until the visitor picks a sort order.
-        this.featuredFirst = true;
 
         // Cache the values we filter and sort on.
         this.cards.forEach((card) => {
-            card.lmTags = (card.dataset.tags || "").split("|").filter(Boolean);
+            card.lmTags = new Set((card.dataset.tags || "").split("|").filter(Boolean));
             card.lmSearch = (card.dataset.search || "").toLowerCase();
             card.lmTitle = (card.dataset.title || "").toLowerCase();
             card.lmUpdated = card.dataset.updated || "";
             card.lmFeatured = card.dataset.featured === "true";
+        });
+
+        this.tagCheckboxes.forEach((checkbox) => {
+            checkbox.lmOption = checkbox.closest(".lm-tag-option");
+            checkbox.lmCount = checkbox.lmOption
+                ? checkbox.lmOption.querySelector(".lm-tag-count")
+                : null;
         });
     }
 
@@ -62,7 +70,6 @@ class LearningMaterialsBrowser {
         });
 
         this.sortSelect.addEventListener("change", () => {
-            this.featuredFirst = false;
             this.page = 1;
             this.apply();
         });
@@ -110,13 +117,13 @@ class LearningMaterialsBrowser {
         this.countText.scrollIntoView({ block: "start", behavior: "smooth" });
     }
 
-    matches(card) {
-        // A card matches if it carries at least one of the selected tags.
-        if (this.selectedTags.size > 0) {
-            const hasTag = card.lmTags.some((tag) => this.selectedTags.has(tag));
-            if (!hasTag) return false;
+    matches(card, tags = this.selectedTags) {
+        // A card matches only if it carries every selected tag (AND) ...
+        for (const tag of tags) {
+            if (!card.lmTags.has(tag)) return false;
         }
 
+        // ... and contains the search term.
         if (this.searchTerm && !card.lmSearch.includes(this.searchTerm)) {
             return false;
         }
@@ -126,7 +133,6 @@ class LearningMaterialsBrowser {
 
     sortCards(cards) {
         const mode = this.sortSelect.value;
-        const featuredFirst = this.featuredFirst;
         const byTitle = (a, b) => a.lmTitle.localeCompare(b.lmTitle);
         // Undated materials sort last, whichever direction the dates run.
         const byDate = (a, b) => {
@@ -136,24 +142,51 @@ class LearningMaterialsBrowser {
             return a.lmUpdated < b.lmUpdated ? -1 : 1;
         };
 
+        const byDateDesc = (a, b) => byDate(b, a);
+        // Featured materials first, most recently updated within each group.
+        const byFeatured = (a, b) => {
+            if (a.lmFeatured !== b.lmFeatured) return a.lmFeatured ? -1 : 1;
+            return byDateDesc(a, b);
+        };
+
         let compare;
         switch (mode) {
+            case "updated-desc": compare = byDateDesc; break;
             case "updated-asc": compare = byDate; break;
             case "title-asc": compare = byTitle; break;
             case "title-desc": compare = (a, b) => byTitle(b, a); break;
-            case "updated-desc":
-            default: compare = (a, b) => byDate(b, a); break;
-        }
-
-        if (featuredFirst) {
-            const withinGroup = compare;
-            compare = (a, b) => {
-                if (a.lmFeatured !== b.lmFeatured) return a.lmFeatured ? -1 : 1;
-                return withinGroup(a, b);
-            };
+            case "featured":
+            default: compare = byFeatured; break;
         }
 
         return cards.sort(compare);
+    }
+
+    /**
+     * Update each sidebar count to the number of results the visitor would get
+     * by adding that tag to the current filters (or, for a selected tag, the
+     * current result count). Tags that would leave nothing are dimmed.
+     */
+    renderTagCounts(matchCount) {
+        this.tagCheckboxes.forEach((checkbox) => {
+            const tag = checkbox.dataset.lmTag;
+            let count;
+            if (this.selectedTags.has(tag)) {
+                count = matchCount;
+            } else {
+                const withTag = new Set(this.selectedTags);
+                withTag.add(tag);
+                count = this.cards.filter((card) => this.matches(card, withTag)).length;
+            }
+
+            if (checkbox.lmCount) {
+                checkbox.lmCount.textContent = String(count);
+                checkbox.lmCount.setAttribute("aria-label", `${count} ${count === 1 ? "guide" : "guides"}`);
+            }
+            if (checkbox.lmOption) {
+                checkbox.lmOption.classList.toggle("lm-tag-option-empty", count === 0 && !checkbox.checked);
+            }
+        });
     }
 
     renderActiveTags() {
@@ -304,6 +337,7 @@ class LearningMaterialsBrowser {
 
         this.renderPagination(pageCount, matching.length);
         this.renderActiveTags();
+        this.renderTagCounts(matching.length);
     }
 }
 

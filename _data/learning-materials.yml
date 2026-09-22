@@ -6,9 +6,11 @@
 #               an image to use as the icon ("/images/logos/rstudio.png")
 # description:  Short summary, rendered as markdown
 # tags:         List of tags; these populate the sidebar tag selector
-# last updated: YYYY-MM-DD, used by the default "Recently updated" sort
-# featured:     true to highlight the material and pin it to the top of the
-#               default listing (the pin is dropped once a visitor sorts)
+# last updated: YYYY-MM-DD, used by the "Recently updated" sort options and to
+#               order materials within the default "Featured" sort
+# featured:     true to highlight the material, list it first under the default
+#               "Featured" sort, and show it under "Featured learning resources"
+#               on the user portal (/uw-research-computing/user-portal.html)
 
 - text: Build a Conda-based Container for Bioinformatics
   url: https://github.com/CHTC/biocafe-containers

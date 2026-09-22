@@ -11,7 +11,7 @@ js_extension:
 {% assign by_date = site.data.learning-materials | sort: "last updated" | reverse %}
 {% assign featured_materials = by_date | where: "featured", true %}
 {% assign other_materials = by_date | where_exp: "material", "material.featured != true" %}
-{% comment %} Featured materials lead the default listing; JS drops the pin once a visitor sorts. {% endcomment %}
+{% comment %} The default "Featured" sort: featured materials first, then most recently updated. {% endcomment %}
 {% assign materials = featured_materials | concat: other_materials %}
 {% assign all_tags = materials | map: "tags" | join: "," | split: "," | uniq | sort_natural %}
 
@@ -20,8 +20,8 @@ js_extension:
 
     <p class="lm-intro">
         Tutorials, workshop materials, and example repositories for learning how to run
-        your research computing work at scale. Filter by topic using the tags, or search
-        for a keyword.
+        your research computing work at scale. Narrow the list by picking one or more tags
+        (each tag you add narrows it further), or search for a keyword.
     </p>
 
     <div class="row">
@@ -76,7 +76,8 @@ js_extension:
                 <div class="lm-sort">
                     <label class="form-label mb-0" for="lm-sort-select">Sort by</label>
                     <select class="form-select" id="lm-sort-select">
-                        <option value="updated-desc" selected>Recently updated</option>
+                        <option value="featured" selected>Featured</option>
+                        <option value="updated-desc">Recently updated</option>
                         <option value="updated-asc">Least recently updated</option>
                         <option value="title-asc">Title (A&ndash;Z)</option>
                         <option value="title-desc">Title (Z&ndash;A)</option>
@@ -154,7 +155,7 @@ js_extension:
 
             {% comment %}
             Every material is in the HTML above so search engines and no-JS visitors see the
-            full list; learning-materials.js pages the grid 10 at a time and fills this in.
+            full list; learning-materials.js pages the grid 12 at a time and fills this in.
             {% endcomment %}
             <nav id="lm-pagination" class="lm-pagination" aria-label="Learning materials pages" hidden></nav>
 
